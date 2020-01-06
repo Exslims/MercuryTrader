@@ -71,5 +71,15 @@ public class NotificationDescriptorParserTest {
         assertEquals(message2.getCurCount(),new Double(5));
         assertEquals(message2.getOffer(),"123");
     }
+    
+    @Test
+    public void testKor() throws Exception{
+    	ItemTradeNotificationDescriptor message1 = (ItemTradeNotificationDescriptor) parser.parse("@수신 테스트: 안녕하세요, 챌린지(보관함 탭 \"~price 3 chaos\", 위치: 왼쪽 1, 상단 1)에 3 chaos(으)로 올려놓은 역병 걸린 묘지 지도(Graveyard Map)(T8)을(를) 구매하고 싶습니다");
+    	assertEquals(message1.getWhisperNickname(),"테스트");
+        assertEquals(message1.getItemName(),"역병 걸린 묘지 지도(Graveyard Map)(T8)");
+        assertEquals(message1.getCurrency(),"chaos");
+        assertEquals(message1.getCurCount(),new Double(3));
+        assertEquals(message1.getOffer(),"");
+    }
 
 }

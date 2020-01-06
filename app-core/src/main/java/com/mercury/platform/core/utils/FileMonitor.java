@@ -33,14 +33,18 @@ public class FileMonitor {
     public void start() {
         String gamePath = Configuration.get().applicationConfiguration().get().getGamePath();
 
-        File folder = new File(gamePath + "logs");
-        this.fileHandler = new MessageFileHandler(gamePath + "logs/Client.txt");
+        File folder = new File(gamePath, "logs");
+        final File logFile = new File(folder, "Client.txt");
+        final File kakaoLogFile = new File(folder, "KakaoClient.txt");
+        this.fileHandler = new MessageFileHandler();
         FileAlterationObserver observer = new FileAlterationObserver(folder);
         monitor = new FileAlterationMonitor(POLLING_INTERVAL);
         FileAlterationListener listener = new FileAlterationListenerAdaptor() {
             @Override
             public void onFileChange(File file) {
-                fileHandler.parse();
+            	if (file.equals(logFile) || file.equals(kakaoLogFile)) {
+            		fileHandler.parse(file);
+            	}
             }
         };
 

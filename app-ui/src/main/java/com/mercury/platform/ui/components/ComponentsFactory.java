@@ -62,12 +62,12 @@ public class ComponentsFactory {
      */
     private void loadFonts() {
         try {
+        	String defaultFontName = new JLabel().getFont().getName();
             BOLD_FONT = Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream("font/Fontin-Bold.ttf"));
             ITALIC_FONT = Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream("font/Fontin-Italic.ttf"));
             REGULAR_FONT = Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream("font/Fontin-Regular.ttf"));
             SMALLCAPS_FONT = Font.createFont(Font.TRUETYPE_FONT, getClass().getClassLoader().getResourceAsStream("font/Fontin-SmallCaps.ttf"));
-            DEFAULT_FONT = new Font("Tahoma", Font.BOLD, (int) (scale * 16));
-
+            DEFAULT_FONT = new Font(defaultFontName, Font.BOLD, (int) (scale * 16));
         } catch (Exception e) {
             log.error(e);
         }

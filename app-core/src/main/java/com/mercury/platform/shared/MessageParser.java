@@ -18,11 +18,15 @@ public class MessageParser {
     private final static String poeAppBulkCurrenciesPattern = "^(.*\\s)?(.+): (\\s*?wtb\\s+?(.+?)(\\s+?listed for\\s+?([\\d\\.]+?)\\s+?(.+))?\\s+?in\\s+?(.+?)\\s+?\\(stash\\s+?\"(.*?)\";\\s+?left\\s+?(\\d+?),\\s+?top\\s+(\\d+?)\\)\\s*?(.*))$";
     private final static String poeCurrencyPattern = "^(.*\\s)?(.+): (.+ to buy your (\\d+(\\.\\d+)?)? (.+) for my (\\d+(\\.\\d+)?)? (.+) in (.*?)\\.\\s*(.*))$";
     private final static String poeMapLiveRegex = "^(.*\\s)?(.+): (I'd like to exchange my (T\\d+:\\s\\([\\s\\S,]+) for your (T\\d+:\\s\\([\\S,\\s]+) in\\s+?(.+?)\\.)";
+    private final static String strTradeStashTabKorPattern = "^(.*\\s)?(.+): (안녕하세요, (.+?)\\s*\\(보관함 탭 \"(.*)\", 위치: 왼쪽 (\\d+), 상단 (\\d+)\\)에\\s+?([\\d\\.]*)\\s*(.*)\\s*\\(으\\)로 올려놓은\\s*(.*)을\\(를\\) 구매하고 싶습니다\\s*(.*))$";
+    private final static String strBulkCurrenciesKorPattern = "^(.*\\s)?(.+): (안녕하세요, (.+?)\\s*에\\s+?올려놓은\\s*(.*)을\\(를\\) 제 ([\\d\\.]*)\\s*(.*)\\s*\\(으\\)로 구매하고 싶습니다\\s*(.*))$";
     private Pattern poeAppItemPattern;
     private Pattern poeTradeStashItemPattern;
     private Pattern poeTradeItemPattern;
     private Pattern poeTradeCurrencyPattern;
     private Pattern poeMapLivePattern;
+    private Pattern poeTradeStashItemKorPattern;
+    private Pattern poeBulkCurrenciesKorPattern;
 
     public MessageParser() {
         this.poeAppItemPattern = Pattern.compile(poeAppPattern);
@@ -30,6 +34,8 @@ public class MessageParser {
         this.poeTradeItemPattern = Pattern.compile(poeTradePattern);
         this.poeTradeCurrencyPattern = Pattern.compile(poeCurrencyPattern);
         this.poeMapLivePattern = Pattern.compile(poeMapLiveRegex);
+        this.poeTradeStashItemKorPattern = Pattern.compile(strTradeStashTabKorPattern);
+        this.poeBulkCurrenciesKorPattern = Pattern.compile(strBulkCurrenciesKorPattern);
     }
 
     public NotificationDescriptor parse(String fullMessage) {
@@ -129,6 +135,47 @@ public class MessageParser {
 			tradeNotification.setType(NotificationType.INC_ITEM_MESSAGE);
 			return tradeNotification;
 		}
+        Matcher poeTradeStashItemKorMatcher = poeTradeStashItemKorPattern.matcher(fullMessage);
+        if (poeTradeStashItemKorMatcher.find()) {
+        	ItemTradeNotificationDescriptor tradeNotification = new ItemTradeNotificationDescriptor();
+        	tradeNotification.setWhisperNickname(poeTradeStashItemKorMatcher.group(2));
+        	tradeNotification.setSourceString(poeTradeStashItemKorMatcher.group(3));
+        	tradeNotification.setItemName(poeTradeStashItemKorMatcher.group(10));
+        	if (poeTradeStashItemKorMatcher.group(8) != null) {
+        		tradeNotification.setCurCount(Double.parseDouble(poeTradeStashItemKorMatcher.group(8)));
+        		tradeNotification.setCurrency(poeTradeStashItemKorMatcher.group(9));
+        	} else {
+        		tradeNotification.setCurCount(0d);
+        		tradeNotification.setCurrency("???");
+        	}
+        	tradeNotification.setLeague(poeTradeStashItemKorMatcher.group(4));
+        	tradeNotification.setTabName(poeTradeStashItemKorMatcher.group(5));
+        	tradeNotification.setLeft(Integer.parseInt(poeTradeStashItemKorMatcher.group(6)));
+        	tradeNotification.setTop(Integer.parseInt(poeTradeStashItemKorMatcher.group(7)));
+        	tradeNotification.setOffer(poeTradeStashItemKorMatcher.group(11));
+        	tradeNotification.setType(NotificationType.INC_ITEM_MESSAGE);
+        	return tradeNotification;
+        }
+        Matcher poeBulkCurrenciesKorMatcher = poeBulkCurrenciesKorPattern.matcher(fullMessage);
+        if (poeBulkCurrenciesKorMatcher.find()) {
+        	ItemTradeNotificationDescriptor tradeNotification = new ItemTradeNotificationDescriptor();
+        	tradeNotification.setWhisperNickname(poeBulkCurrenciesKorMatcher.group(2));
+        	tradeNotification.setSourceString(poeBulkCurrenciesKorMatcher.group(3));
+        	tradeNotification.setItemName(poeBulkCurrenciesKorMatcher.group(5));
+        	if (poeBulkCurrenciesKorMatcher.group(6) != null) {
+        		tradeNotification.setCurCount(Double.parseDouble(poeBulkCurrenciesKorMatcher.group(6)));
+        		tradeNotification.setCurrency(poeBulkCurrenciesKorMatcher.group(7));
+        	} else {
+        		tradeNotification.setCurCount(0d);
+        		tradeNotification.setCurrency("???");
+        	}
+        	tradeNotification.setLeague(poeBulkCurrenciesKorMatcher.group(4));
+        	tradeNotification.setOffer(poeBulkCurrenciesKorMatcher.group(8));
+        	tradeNotification.setType(NotificationType.INC_ITEM_MESSAGE);
+        	// need to map korean currency names to english currency names
+        	// tradeNotification.setType(NotificationType.INC_CURRENCY_MESSAGE);
+        	return tradeNotification;
+        }
         return null;
     }
 }

@@ -25,6 +25,7 @@ public class TradeIncMessagesInterceptor extends MessageInterceptor {
         this.clients.add(new BZIncLocalizationMatcher());
         this.clients.add(new FrenchIncLocalizationMatcher());
         this.clients.add(new GermanIncLocalizationMatcher());
+        this.clients.add(new KoreanIncLocalizationMatcher());
     }
 
     @Override
@@ -51,6 +52,7 @@ public class TradeIncMessagesInterceptor extends MessageInterceptor {
         public boolean isSuitableFor(String message) {
             return message.contains("Hi, I would like") ||
                     message.contains("Hi, I'd like") || message.contains("I'd like") ||
+                    message.contains("안녕하세요, ") || message.contains("구매하고 싶습니다") ||
                     (message.contains("wtb") && message.contains("(stash"));
         }
 
@@ -139,4 +141,17 @@ public class TradeIncMessagesInterceptor extends MessageInterceptor {
             return StringUtils.substringAfter(src, "@Von");
         }
     }
+    
+    private class KoreanIncLocalizationMatcher extends LocalizationMatcher {
+        @Override
+        public boolean isSuitableFor(String message) {
+            return message.contains("@수신") && super.isSuitableFor(message);
+        }
+
+        @Override
+        public String trimString(String src) {
+            return StringUtils.substringAfter(src, "@수신");
+        }
+    }
+
 }

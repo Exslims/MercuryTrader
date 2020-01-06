@@ -25,6 +25,8 @@ public class PlainMessageInterceptor extends MessageInterceptor {
         this.clients.add(new FrenchOutLocalizationMatcher());
         this.clients.add(new GermanIncLocalizationMatcher());
         this.clients.add(new GermanOutLocalizationMatcher());
+        this.clients.add(new KoreanIncLocalizationMatcher());
+        this.clients.add(new KoreanOutLocalizationMatcher());
     }
 
     @Override
