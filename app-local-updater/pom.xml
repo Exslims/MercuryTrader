@@ -10,7 +10,7 @@
     <groupId>com.mercury.platfrom</groupId>
 
     <properties>
-        <log4jServer.version>2.7</log4jServer.version>
+        <log4jServer.version>2.13.3</log4jServer.version>
     </properties>
 
     <dependencies>
